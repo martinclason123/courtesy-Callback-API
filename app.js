@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 
 // Imports
+const createHistoricalDB = require("./Mongo Functions/createHistoricalDB"); // if the historical database does not exist, it is created.
 const cors = require("cors"); // allows API calls from react front end
 const insertOne = require("./Mongo Functions/insertOne"); // needed for inserting new records into db after a callback is requested
 const updateOne = require("./Mongo Functions/updateOne"); // needed for updating records after a callback is fulfilled
@@ -22,9 +23,13 @@ app.use(
     origin: "*",
   })
 );
+
+// creates historical db if it does not exist
+createHistoricalDB();
+
 // Adds the previous days data to the historical collection, and creates new daily table
 nodeCron.schedule(
-  "47 6 * * *",
+  "00 6 * * *",
   () => {
     // creating a variable to be added to the historical collection
     getTodaysCallbacks(todaysCollection, (result) => {
